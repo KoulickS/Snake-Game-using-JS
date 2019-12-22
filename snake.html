@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <style>
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+  body {
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  canvas {
+  	width: 80vmin;
+    border: 10px solid cornflowerblue;
+  }
+  </style>
+</head>
+<body>
+<canvas width="400" height="400" id="game"></canvas>
+<div id="score" display='top'>Score: 0</div>
+<script>
+const canvas = document.getElementById('game');
+//const button = document.getElementById("play");
+const score = document.getElementById("score");
+const context = canvas.getContext('2d');
+var row= 16;
+var c = 0;
+
+  
+var lengthofsnake = {
+  x: 160,
+  y: 160,
+  dx: row,
+  dy: 0,
+  score: 0,
+  matrix: [],
+  sizes: 4
+};
+var food = {
+  x: 320,
+  y: 320
+};
+	function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+
+function checkGameOver() {
+  const head = state.matrix[0];
+  return lengthofsnake.matrix.some(
+    (part, i) => i !== 0 && head.x === part.x && head.y === part.y
+  );
+}
+
+
+function loop() {
+  requestAnimationFrame(loop);
+  if (++c < 4) {
+    return;
+  }
+  c = 0;
+  context.clearRect(0,0,canvas.width,canvas.height);
+ lengthofsnake.x += lengthofsnake.dx;
+  lengthofsnake.y += lengthofsnake.dy;
+  if (lengthofsnake.x < 0) {
+    lengthofsnake.x = canvas.width - row;
+  }
+  else if (lengthofsnake.x >= canvas.width) {
+    lengthofsnake.x = 0;
+  }
+  if (lengthofsnake.y < 0) {
+    lengthofsnake.y = canvas.height - row;
+  }
+  else if (lengthofsnake.y >= canvas.height) {
+    lengthofsnake.y = 0;
+  }
+	lengthofsnake.matrix.unshift({x: lengthofsnake.x, y: lengthofsnake.y});
+
+	if (lengthofsnake.matrix.length >lengthofsnake.sizes){
+    lengthofsnake.matrix.pop();
+  }
+		context.fillStyle = 'blue';
+ 		 context.fillRect(food.x, food.y, row-1, row-1);
+  context.fillStyle = 'yellow';
+  lengthofsnake.matrix.forEach(function(cell, index) {
+    context.fillRect(cell.x, cell.y, row-1, row-1);  
+    if (cell.x ===food.x && cell.y ===food.y) {
+      lengthofsnake.sizes++;
+      lengthofsnake.score++;
+      score.innerHTML = "Score: " + lengthofsnake.score;
+      food.x = getRandomInt(0, 25) * row;
+      food.y = getRandomInt(0, 25) * row;
+    }
+		for (var i = index + 1; i < lengthofsnake.matrix.length; i++) {
+      if (cell.x === lengthofsnake.matrix[i].x && cell.y === lengthofsnake.matrix[i].y) {
+        lengthofsnake.x = 160;
+        lengthofsnake.y = 160;
+        lengthofsnake.matrix = [];
+        lengthofsnake.sizes = 4;
+        lengthofsnake.dx = row;
+        lengthofsnake.dy = 0;
+        food.x = getRandomInt(0, 25) * grid;
+        food.y = getRandomInt(0, 25) * grid;
+      }
+    }
+  });
+}
+
+document.addEventListener('keydown', function(e) {
+
+  if (e.which === 37 && lengthofsnake.dx === 0) {
+    lengthofsnake.dx = -row; lengthofsnake.dy = 0;
+  }
+  else if (e.which === 38 && lengthofsnake.dy === 0) {
+    lengthofsnake.dy = -row; lengthofsnake.dx = 0;
+  }
+  else if (e.which === 39 && lengthofsnake.dx === 0) {
+    lengthofsnake.dx = row;
+    lengthofsnake.dy = 0;
+  }
+  else if (e.which === 40 && lengthofsnake.dy === 0) {
+    lengthofsnake.dy = row;
+    lengthofsnake.dx = 0;
+  }
+});
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
+
+
